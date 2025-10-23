@@ -5,18 +5,32 @@ public class NameFormatter {
     private NameFormatter() {}
 
     private static String properCasing(String namePart) {
-        return Character.toUpperCase(namePart.charAt(0)) + namePart.substring(1).toLowerCase();
-    }
-
-    public static String format(String firstName, String lastName) {
-        return NameFormatter.properCasing(lastName) + ", " + NameFormatter.properCasing(firstName);
+        namePart = namePart.trim();
+        if (!namePart.isEmpty()) {
+            return Character.toUpperCase(namePart.charAt(0)) + namePart.substring(1).toLowerCase();
+        } else {
+            return namePart;
+        }
     }
 
     public static String format(String prefix, String firstName,
                                 String middleName, String lastName, String suffix) {
-        return String.join(", ", NameFormatter.properCasing(lastName),
-                String.join(" ", NameFormatter.properCasing(prefix), NameFormatter.properCasing(firstName),
-                        NameFormatter.properCasing(middleName)), suffix);
+        String formattedName = NameFormatter.properCasing(lastName).replace(",", "") + ", ";
+        if (!prefix.isEmpty()) {
+            formattedName += NameFormatter.properCasing(prefix).replace(".", "") + ". ";
+        }
+        formattedName += NameFormatter.properCasing(firstName);
+        if (!middleName.isEmpty()) {
+            formattedName += " " + NameFormatter.properCasing(middleName);
+        }
+        if (!suffix.isEmpty()) {
+            formattedName += ", " + suffix;
+        }
+        return formattedName;
+    }
+
+    public static String format(String firstName, String lastName) {
+        return NameFormatter.properCasing(lastName) + ", " + NameFormatter.properCasing(firstName);
     }
 
     public static String format(String fullName) {
@@ -29,9 +43,9 @@ public class NameFormatter {
 
         switch (nameParts.length) {
             case 2:
-                firstName = nameParts[0].trim();
-                lastName = nameParts[1].trim();
-                break;
+                firstName = nameParts[0];
+                lastName = nameParts[1];
+                return NameFormatter.format(firstName, lastName);
             case 3:
                 if (nameParts[0].contains(".")) {
                     prefix = nameParts[0].trim();
@@ -73,18 +87,7 @@ public class NameFormatter {
                 suffix = nameParts[4].trim();
                 break;
         }
-        String formattedName = NameFormatter.properCasing(lastName).replace(",", "") + ", ";
-        if (!prefix.isEmpty()) {
-            formattedName += NameFormatter.properCasing(prefix).replace(".", "") + ". ";
-        }
-        formattedName += NameFormatter.properCasing(firstName) + " ";
-        if (!middleName.isEmpty()) {
-            formattedName += NameFormatter.properCasing(middleName);
-        }
-        if (!suffix.isEmpty()) {
-            formattedName += ", " + suffix;
-        }
-        return formattedName;
+        return NameFormatter.format(prefix, firstName, middleName, lastName, suffix);
     }
 
 }
